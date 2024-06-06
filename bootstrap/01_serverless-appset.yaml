@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: openshift-serverless
+  namespace: openshift-gitops
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: in-cluster
+  template:
+    metadata:
+      name: openshift-serverless-{{cluster}}
+    spec:
+      project: openshift-serverless
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      source:
+        repoURL: https://github.com/Everything-is-Code/openshift-serverless.git
+        targetRevision: main
+        path: resources/
+      destination:
+        server: https://kubernetes.default.svc
